@@ -5,17 +5,20 @@ class monthly_tax_calculator(object):
     def __init__(self):
         
         self.tax_amount = None
+        self.national_insurance = None
+        self.health_insurance = None
+        self.pension = None
     
     def monthly_tax(self, year, amount, credit):
         """
-        This function returns the total monthly tax to pay
+        This function calculate the total monthly tax to pay
         """
         monthly_tax_amount = (self.monthly_tax_before_credit(year, amount) 
-                              - self.credit(year, credit))
-           
+                              - self.credit(year, credit)
+                              - self.calculate_pension(year, amount))
+                  
         self.tax_amount = monthly_tax_amount if monthly_tax_amount > 0 else 0
         
-    
     
     def monthly_tax_before_credit(self, year, amount):
         """
@@ -75,6 +78,7 @@ class monthly_tax_calculator(object):
         This function returns the amount of the credit
         It gets the point of the credit
         """
+        
         if year == 2018:
             return credit_points * 216    
         elif year == 2017:
@@ -83,14 +87,58 @@ class monthly_tax_calculator(object):
             return credit_points * 216 
         elif year == 2015:
             return credit_points * 218 
-        elif year == 2014:
-            return credit_points * 218 
-        elif year == 2013:
-            return credit_points * 218
+      
         
-            
-            
-            
+        
+    def calculate_pension (self, year, salary):
+        """
+        This function calculate the pension provision
+        and returns the tax credit for the pension
+        """
+        if year == 2018:
+            percent_of_provision = 0.06
+            max_for_tax = 609       
+        elif year == 2017:
+            percent_of_provision = 0.06
+            max_for_tax = 602
+        elif year == 2016:
+            percent_of_provision = 0.0575 # start only on 1/7/16
+            max_for_tax = 602
+        elif year == 2015:
+            percent_of_provision = 0.055
+            max_for_tax = 609
+
+        self.pension = salary * percent_of_provision
+        
+        return (min(salary * percent_of_provision, max_for_tax) * 0.35)
+        
+        
+    def calculte_insurance(self, year, amount):
+        """
+        This function calculate the national insurance tax
+        and the health insurance tax
+        """ 
+        if year == 2018:    
+            max_amount = 43370
+            break_amount = 5944
+        elif year == 2017:    
+            max_amount = 43240
+            break_amount = 5804  
+        elif year == 2016:    
+            max_amount = 43240
+            break_amount = 5678
+        elif year == 2015:    
+            max_amount = 43240
+            break_amount = 5557
+
+        amount = min(amount, max_amount)
+        if amount < break_amount:
+            self.national_insurance = amount * 0.004
+            self.health_insurance = amount * 0.031
+        else:
+            self.national_insurance = break_amount * 0.004 + (amount - 5944) * 0.07
+            self.health_insurance = break_amount * 0.031 + (amount - 5944) * 0.05
+         
             
 def main():
     while True:
@@ -112,12 +160,21 @@ def main():
             print "The credit should be a number"
             continue
         my_tax.monthly_tax(year, salary, credit)
-        print "This is your tax: ",my_tax.tax_amount
+        my_tax.calculte_insurance(year, salary)
+        print "This is your tax: ", my_tax.tax_amount
+        print "Your national insurance tax is: ", my_tax.national_insurance
+        print "Your health insurance tax is: ", my_tax.health_insurance
+        print "Your personal pension provision is ",my_tax.pension
+        print "your net salary will be: ",(
+               salary
+               - my_tax.tax_amount 
+               - my_tax.national_insurance 
+               - my_tax.health_insurance
+               - my_tax.pension)
+            
         print "press 1 if you want to have a new calculate"
         check = input()
         if check !=1:
             break
         
 main()
- 
-
