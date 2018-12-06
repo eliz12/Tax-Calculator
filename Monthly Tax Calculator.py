@@ -145,17 +145,17 @@ def main():
         my_tax = monthly_tax_calculator()
         print "Let's check the tax"
         print "Enter the revant year"
-        year = input()
+        year = raw_input()
         if year not in [2015, 2016, 2017, 2018]:
             print "I can't check the tax for this year"
             continue
         print "Please enter your salary"
-        salary = input()
+        salary = raw_input()
         if type(salary) not in [int, float]:
             print "The salary should be a number"
             continue
         print "Please enter your credit points"
-        credit = input()
+        credit = raw_input()
         if type(credit) not in [int, float] :
             print "The credit should be a number"
             continue
@@ -173,7 +173,7 @@ def main():
                - my_tax.pension)
             
         print "press 1 if you want to have a new calculate"
-        check = input()
+        check = raw_input()
         if check !=1:
             break
         
